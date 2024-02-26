@@ -1,0 +1,36 @@
+# version of docker compose syntax that
+# we will be applied in this project
+version: "3.9"
+
+# services is the main block in docker compose file
+# Normally, docker-compose consists of multiple services.
+# The name of our current service is "app"
+services:
+  app:
+    build:
+      # This means we want to build our project
+      # inside the current directory.
+      # Also, when we run commands, this means we run it from
+      # the POV of "." or current directory.
+      context: .
+      # DEV=true argument was added because we would like to
+      # separate DEBUG mode dependencies of our project
+      # with the RELEASE mode dependencies of our project.
+      # DEV=true overrides the default DEV argument in Dockerfile
+      args:
+        - DEV=true
+    # This maps port 8000 of our local machine to
+    # our Docker container which has a port of 8000
+    # Essentially, our Docker container contains our server
+    # and this port mapping is how we connect to the network
+    # and hence to our server.
+    ports:
+      - "8000:8000"
+    # This means we sync our project app code to the app inside
+    # container. We do this to avoid rebuilding the container
+    # for every minor changes in our porject app code.
+    volumes:
+      - ./app:/app
+    # The default command we use to run the service.
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"

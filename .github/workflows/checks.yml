@@ -1,0 +1,24 @@
+--- # three dashes signify the file is yml file
+name: Checks
+
+on: [push] # this is our trigger
+
+# jobs that we are going to run
+jobs:
+  test-lint: # id for the job
+    name: Test and Lint # human friendly name instead of the id
+    runs-on: ubuntu-20.04 # this is our runner*
+    steps: # different steps that will run on the job
+      - name: Login to Docker Hub # name of step
+        uses: docker/login-action@v1 # pre-made action in GitHub Actions repository
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v2 # pre-made action in GitHub Actions repository
+      - name: Test
+        run: docker-compose run --rm app sh -c "python manage.py test"
+      - name: Lint
+        run: docker-compose run --rm app sh -c "flake8"
+# *runner is the operating system where we are going to run our job on.
+# Note: ubuntu-20.04 already has pre-installed docker-compose
