@@ -1,3 +1,3 @@
 Django
 djangorestframework
-importlib-metadata==4.13.0
+psycopg2

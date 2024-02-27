@@ -34,3 +34,33 @@ services:
     # The default command we use to run the service.
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
+    # Add the ff environment variables so that app service can
+    # connect to the db service. Later these info will be pulled by
+    # Django to connect to the server.
+    environment:
+      - DB_HOST=db # see line below, db is the name of the db service
+      - DB_NAME=devdv
+      - DB_USER=devuser
+      - DB_PASS=whatever
+    depends_on:
+      - db
+
+  # This is our database service.
+  db:
+    #image: postgres:13-alpine
+    image: postgres:12.18-bullseye
+    # This specify where our volume directory is located
+    # in the container
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    # Configure docker compose db environment variables.
+    # These details are for local development database only.
+    # In practice, these details should not be hardcoded.
+    environment:
+      - POSTGRES_DB=devdb
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=whatever
+
+# Volume is for persistent data storage.
+volumes:
+  dev-db-data:

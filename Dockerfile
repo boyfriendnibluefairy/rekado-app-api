@@ -60,10 +60,37 @@ EXPOSE 8000
 # with the RELEASE mode dependencies of our project.
 ARG DEV=false
 
+# install psycopg2
+# RUN pip install wheel
+RUN apt-get update \
+    && apt-get -y install libpq-dev python3-dev gcc \
+    && pip install psycopg2
+
 # RUN python -m venv /py && \
 #     /py/bin/pip install --upgrade pip && \
 #     /py/bin/pip install -r /tmp/requirements.txt && \
 #     rm -f /tmp && \
+#     adduser \
+#         --disabled-password \
+#         --no-create-home \
+#         django-user
+
+# After --upgrade pip, we're going to add some dependencies for
+# Psycopg2 package.
+# Before adduser, we remove some dependencies because such
+# dependencies are only needed for Psycopg2 installation.
+# No need to store such dependencies in order to run Psycopg2.
+
+# RUN python -m venv /py && \
+#     /py/bin/pip install --upgrade pip && \
+#     apk add --update --no-cache postgresql-client && \
+#     apk add --update --no-cache --virtual .tmp-build-deps \
+#         build-base postgresql-dev musl-dev && \
+#     /py/bin/pip install -r /tmp/requirements.txt && \
+#     if [ $DEV = "true" ]; \
+#         then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
+#     fi && \
+#     apk del .tmp-build-deps && \
 #     adduser \
 #         --disabled-password \
 #         --no-create-home \
@@ -79,6 +106,9 @@ RUN python -m venv /py && \
         --disabled-password \
         --no-create-home \
         django-user
+
+
+
 
 # Update the environment variable
 ENV PATH="/py/bin:$PATH"
