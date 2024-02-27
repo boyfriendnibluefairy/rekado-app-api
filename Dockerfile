@@ -2,7 +2,8 @@
 # FROM ubuntu:latest
 # from https://hub.docker.com/_/python, 3.9-alphine3.13 does not exist anymore
 #FROM python:3.9.18-alphine
-FROM python:3.13.0a4-slim-bullseye
+FROM python:3.9.18-alpine3.19
+#FROM python:3.13.0a4-slim-bullseye
 
 # name of the developer who will maintain this
 LABEL maintainer="boyfriendnibluefairy"
@@ -61,10 +62,19 @@ EXPOSE 8000
 ARG DEV=false
 
 # install psycopg2
-# RUN pip install wheel
-RUN apt-get update \
-    && apt-get -y install libpq-dev python3-dev gcc \
-    && pip install psycopg2
+# RUN apt-get update \
+#     && apt-get -y install libpq-dev python3-dev gcc \
+#     && pip install psycopg2
+
+# RUN apk update \
+#     && apk install libpq-dev python3-dev gcc \
+#     && apk install build-essential \
+#     && apk install postgresql-server-dev-all \
+#     && pip install psycopg2
+
+# RUN apt-get update \
+#     && apt-get -y install build-dep python-psycopg2 \
+#     && pip install psycopg2-binary
 
 # RUN python -m venv /py && \
 #     /py/bin/pip install --upgrade pip && \
@@ -81,33 +91,34 @@ RUN apt-get update \
 # dependencies are only needed for Psycopg2 installation.
 # No need to store such dependencies in order to run Psycopg2.
 
-# RUN python -m venv /py && \
-#     /py/bin/pip install --upgrade pip && \
-#     apk add --update --no-cache postgresql-client && \
-#     apk add --update --no-cache --virtual .tmp-build-deps \
-#         build-base postgresql-dev musl-dev && \
-#     /py/bin/pip install -r /tmp/requirements.txt && \
-#     if [ $DEV = "true" ]; \
-#         then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
-#     fi && \
-#     apk del .tmp-build-deps && \
-#     adduser \
-#         --disabled-password \
-#         --no-create-home \
-#         django-user
-
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
+    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
         then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
     fi && \
+    apk del .tmp-build-deps && \
     adduser \
         --disabled-password \
         --no-create-home \
         django-user
 
+# RUN python -m venv /py && \
+#     /py/bin/pip install --upgrade pip && \
+#     /py/bin/pip install -r /tmp/requirements.txt && \
+#     if [ $DEV = "true" ]; \
+#         then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
+#     fi && \
+#     adduser \
+#         --disabled-password \
+#         --no-create-home \
+#         django-user
 
+# install psycopg2 on alpine
+RUN 
 
 
 # Update the environment variable
