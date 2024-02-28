@@ -33,13 +33,15 @@ services:
       - ./app:/app
     # The default command we use to run the service.
     command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     # Add the ff environment variables so that app service can
     # connect to the db service. Later these info will be pulled by
     # Django to connect to the server.
     environment:
       - DB_HOST=db # see line below, db is the name of the db service
-      - DB_NAME=devdv
+      - DB_NAME=devdb
       - DB_USER=devuser
       - DB_PASS=whatever
     depends_on:
@@ -47,8 +49,9 @@ services:
 
   # This is our database service.
   db:
-    #image: postgres:13-alpine
-    image: postgres:12.18-bullseye
+    #image: postgres:10-alpine
+    image: postgres:13-alpine
+    #image: postgres:12.18-bullseye
     # This specify where our volume directory is located
     # in the container
     volumes:
